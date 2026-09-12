@@ -498,7 +498,22 @@ section {
 }
 
 .project:hover .project-image {
-    transform: scale(1.10);
+    transform:
+        scale(1.10)
+        rotateX(var(--rotate-x, 0deg))
+        rotateY(var(--rotate-y, 0deg));
+}
+    .project-image {
+    --rotate-x: 0deg;
+    --rotate-y: 0deg;
+
+    transform:
+        scale(1)
+        rotateX(var(--rotate-x))
+        rotateY(var(--rotate-y));
+
+    transform-style: preserve-3d;
+    will-change: transform;
 }
 
 .project {
@@ -1646,6 +1661,56 @@ window.addEventListener("scroll", () => {
             }
 
         }
+
+    });
+
+});
+    /* =========================
+   3D PROJECT TILT
+========================= */
+
+const projectCards = document.querySelectorAll(".project");
+
+projectCards.forEach(project => {
+
+    const image = project.querySelector(".project-image");
+
+    project.addEventListener("mousemove", (e) => {
+
+        const rect = project.getBoundingClientRect();
+
+        const x =
+            (e.clientX - rect.left) / rect.width;
+
+        const y =
+            (e.clientY - rect.top) / rect.height;
+
+        const rotateY = (x - 0.5) * 6;
+        const rotateX = (0.5 - y) * 6;
+
+        image.style.setProperty(
+            "--rotate-x",
+            `${rotateX}deg`
+        );
+
+        image.style.setProperty(
+            "--rotate-y",
+            `${rotateY}deg`
+        );
+
+    });
+
+    project.addEventListener("mouseleave", () => {
+
+        image.style.setProperty(
+            "--rotate-x",
+            "0deg"
+        );
+
+        image.style.setProperty(
+            "--rotate-y",
+            "0deg"
+        );
 
     });
 
