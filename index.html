@@ -633,7 +633,186 @@ footer strong {
         transform: translateY(0);
     }
 }
+/* =========================
+   PREMIUM INTERACTION
+========================= */
 
+/* Custom cursor */
+.cursor-dot {
+    position: fixed;
+    width: 7px;
+    height: 7px;
+    background: #c8ad7b;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    transform: translate(-50%, -50%);
+    transition: transform .12s ease, width .3s ease, height .3s ease;
+}
+
+.cursor-ring {
+    position: fixed;
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(200,173,123,.7);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition:
+        width .35s cubic-bezier(.16,1,.3,1),
+        height .35s cubic-bezier(.16,1,.3,1),
+        background .35s ease,
+        border .35s ease;
+}
+
+.cursor-ring.hover {
+    width: 65px;
+    height: 65px;
+    background: rgba(200,173,123,.08);
+    border-color: #c8ad7b;
+}
+
+.cursor-dot.hover {
+    width: 4px;
+    height: 4px;
+}
+
+/* Hero mouse movement */
+.hero-image {
+    will-change: transform;
+    transition: transform .15s linear;
+}
+
+/* Magnetic buttons */
+.btn,
+.nav-contact {
+    position: relative;
+    will-change: transform;
+}
+
+/* Animated underline */
+.nav-links a {
+    position: relative;
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -7px;
+    width: 0;
+    height: 1px;
+    background: #c8ad7b;
+    transition: width .4s cubic-bezier(.16,1,.3,1);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* Project interaction */
+.project {
+    cursor: pointer;
+}
+
+.project::after {
+    content: "VIEW PROJECT  ↗";
+    position: absolute;
+    top: 25px;
+    right: 25px;
+
+    padding: 10px 15px;
+
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 50px;
+
+    font-size: 9px;
+    letter-spacing: 2px;
+
+    opacity: 0;
+    transform: translateY(-15px);
+
+    transition: .5s cubic-bezier(.16,1,.3,1);
+    z-index: 5;
+}
+
+.project:hover::after {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Service number animation */
+.service-number {
+    transition: transform .5s cubic-bezier(.16,1,.3,1);
+}
+
+.service:hover .service-number {
+    transform: translateX(10px);
+}
+
+.service h3 {
+    transition: transform .5s cubic-bezier(.16,1,.3,1);
+}
+
+.service:hover h3 {
+    transform: translateX(8px);
+}
+
+/* Architectural grid overlay */
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            90deg,
+            transparent 49.9%,
+            rgba(255,255,255,.035) 50%,
+            transparent 50.1%
+        ),
+        linear-gradient(
+            transparent 49.9%,
+            rgba(255,255,255,.025) 50%,
+            transparent 50.1%
+        );
+
+    background-size: 25vw 25vh;
+    z-index: 1;
+}
+
+/* Hero content sits above grid */
+.hero-content,
+.scroll-indicator {
+    z-index: 3;
+}
+
+/* Smooth text reveal */
+.hero h1 {
+    overflow: hidden;
+}
+
+.hero h1,
+.hero-description,
+.hero-buttons {
+    will-change: transform, opacity;
+}
+
+/* Scroll progress */
+.scroll-progress {
+    position: fixed;
+    right: 0;
+    top: 0;
+
+    width: 2px;
+    height: 0;
+
+    background: #c8ad7b;
+
+    z-index: 10001;
+}
 /* =========================
    MOBILE
 ========================= */
@@ -732,6 +911,12 @@ footer strong {
 </head>
 
 <body>
+    <!-- Premium cursor -->
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+
+<!-- Scroll progress -->
+<div class="scroll-progress"></div>
 
 <!-- ================= NAVIGATION ================= -->
 
@@ -1080,7 +1265,157 @@ window.addEventListener("scroll", () => {
     }
 
 });
+/* =========================
+   PREMIUM CURSOR
+========================= */
 
+const cursorDot = document.querySelector(".cursor-dot");
+const cursorRing = document.querySelector(".cursor-ring");
+
+let mouseX = 0;
+let mouseY = 0;
+let ringX = 0;
+let ringY = 0;
+
+document.addEventListener("mousemove", (e) => {
+
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    cursorDot.style.left = mouseX + "px";
+    cursorDot.style.top = mouseY + "px";
+
+});
+
+function animateCursor() {
+
+    ringX += (mouseX - ringX) * 0.15;
+    ringY += (mouseY - ringY) * 0.15;
+
+    cursorRing.style.left = ringX + "px";
+    cursorRing.style.top = ringY + "px";
+
+    requestAnimationFrame(animateCursor);
+}
+
+animateCursor();
+
+
+/* Cursor hover effect */
+
+const interactiveElements = document.querySelectorAll(
+    "a, button, .service, .project"
+);
+
+interactiveElements.forEach(element => {
+
+    element.addEventListener("mouseenter", () => {
+
+        cursorRing.classList.add("hover");
+        cursorDot.classList.add("hover");
+
+    });
+
+    element.addEventListener("mouseleave", () => {
+
+        cursorRing.classList.remove("hover");
+        cursorDot.classList.remove("hover");
+
+    });
+
+});
+
+
+/* =========================
+   HERO MOUSE PARALLAX
+========================= */
+
+const hero = document.querySelector(".hero");
+
+if (hero) {
+
+    hero.addEventListener("mousemove", (e) => {
+
+        const x = (e.clientX / window.innerWidth - 0.5);
+        const y = (e.clientY / window.innerHeight - 0.5);
+
+        heroImage.style.transform =
+            `scale(1.04) translate(${x * -18}px, ${y * -18}px)`;
+
+    });
+
+    hero.addEventListener("mouseleave", () => {
+
+        heroImage.style.transform =
+            "scale(1.02) translate(0,0)";
+
+    });
+
+}
+
+
+/* =========================
+   MAGNETIC BUTTONS
+========================= */
+
+document.querySelectorAll(".btn, .nav-contact").forEach(button => {
+
+    button.addEventListener("mousemove", (e) => {
+
+        const rect = button.getBoundingClientRect();
+
+        const x =
+            e.clientX - rect.left - rect.width / 2;
+
+        const y =
+            e.clientY - rect.top - rect.height / 2;
+
+        button.style.transform =
+            `translate(${x * 0.15}px, ${y * 0.15}px)`;
+
+    });
+
+    button.addEventListener("mouseleave", () => {
+
+        button.style.transform = "";
+
+    });
+
+});
+
+
+/* =========================
+   SCROLL PROGRESS
+========================= */
+
+const progress = document.querySelector(".scroll-progress");
+
+window.addEventListener("scroll", () => {
+
+    const scrollTop = window.scrollY;
+
+    const documentHeight =
+        document.documentElement.scrollHeight -
+        window.innerHeight;
+
+    const percentage =
+        (scrollTop / documentHeight) * 100;
+
+    progress.style.height = percentage + "%";
+
+});
+
+
+/* =========================
+   MOBILE CURSOR DISABLE
+========================= */
+
+if (window.matchMedia("(pointer: coarse)").matches) {
+
+    cursorDot.style.display = "none";
+    cursorRing.style.display = "none";
+
+}
 </script>
 
 </body>
