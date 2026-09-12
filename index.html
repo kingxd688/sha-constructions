@@ -1431,7 +1431,13 @@ const observer = new IntersectionObserver(
         entries.forEach(entry => {
 
             if (entry.isIntersecting) {
+
                 entry.target.classList.add("show");
+
+            } else {
+
+                entry.target.classList.remove("show");
+
             }
 
         });
@@ -1439,10 +1445,16 @@ const observer = new IntersectionObserver(
     },
 
     {
-        threshold: .15
+        threshold: 0.15
     }
 
 );
+
+document.querySelectorAll(".reveal").forEach(element => {
+
+    observer.observe(element);
+
+});
 
 document.querySelectorAll(".reveal").forEach(element => {
 
